@@ -1,0 +1,84 @@
+:root {
+  --primary: #6366f1;
+  --secondary: #ec4899;
+  --bg: #0f172a;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--bg);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+h1 { margin-bottom: 1.5rem; font-weight: 300; letter-spacing: 2px; }
+
+.btn-group { display: flex; gap: 1rem; margin-bottom: 2rem; }
+
+button {
+  flex: 1;
+  padding: 1rem;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: transform 0.2s, filter 0.2s;
+  color: white;
+}
+
+.btn-a { background: var(--primary); }
+.btn-b { background: var(--secondary); }
+
+button:hover { transform: scale(1.05); filter: brightness(1.2); }
+button:active { transform: scale(0.95); }
+
+.stats { text-align: left; margin-top: 1rem; }
+
+.stat-label {
+  display: flex; 
+  justify-content: space-between;
+}
+
+.progress-container {
+  background: rgba(255,255,255,0.1);
+  border-radius: 10px;
+  height: 12px;
+  margin: 10px 0 20px 0;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  transition: width 0.5s ease-in-out;
+}
+
+#bar-a { background: var(--primary); }
+#bar-b { background: var(--secondary); }
+
+#winner {
+  margin-top: 1.5rem;
+  padding: 10px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.05);
+  min-height: 40px;
+}
+
+.winner-a { color: #818cf8; }
+.winner-b { color: #fb7185; }

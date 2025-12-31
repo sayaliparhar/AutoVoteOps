@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Voting App</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="card">
+    <h1>VOTE NOW</h1>
+
+    <div class="btn-group">
+      <button class="btn-a" onclick="vote('optionA')">TEAM A 🟦</button>
+      <button class="btn-b" onclick="vote('optionB')">TEAM B 🟥</button>
+    </div>
+
+    <div class="stats">
+      <div class="stat-label">
+        <span>Team A</span> <span id="a">0</span>
+      </div>
+      <div class="progress-container">
+        <div id="bar-a" class="progress-bar"></div>
+      </div>
+
+      <div class="stat-label">
+        <span>Team B</span> <span id="b">0</span>
+      </div>
+      <div class="progress-container">
+        <div id="bar-b" class="progress-bar"></div>
+      </div>
+    </div>
+
+    <h2 id="winner">Waiting for votes...</h2>
+  </div>
+
+  <script>
+    async function refresh() {
+      try {
+        const v = await fetch("/api/votes").then(r => r.json());
+        const total = (v.optionA + v.optionB) || 1;
+
+        document.getElementById("a").innerText = v.optionA;
+        document.getElementById("b").innerText = v.optionB;
+
+        document.getElementById("bar-a").style.width = (v.optionA / total * 100) + "%";
+        document.getElementById("bar-b").style.width = (v.optionB / total * 100) + "%";
+
+        const w = await fetch("/api/winner").then(r => r.json());
+        const winnerEl = document.getElementById("winner");
+        
+        if (w.winner === "Tie") {
+          winnerEl.innerHTML = "It's a Tie! 🤝";
+          winnerEl.className = ""; 
+        } else {
+          winnerEl.innerHTML = w.winner + " is Winning! 🏆";
+          winnerEl.className = w.winner.includes("A") ? "winner-a" : "winner-b";
+        }
+      } catch (err) {
+        console.error("Fetch error:", err);
+      }
+    }
+
+    async function vote(option) {
+      await fetch("/api/vote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ option })
+      });
+      refresh();
+    }
+
+    setInterval(refresh, 5000);
+    refresh();
+  </script>
+</body>
+</html>
