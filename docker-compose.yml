@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "3000:3000"
+    networks:
+      - demo
+    depends_on:
+      - frontend
+
+  db:
+    image: mysql:8.3
+    enviornment:
+      MYSQL_ROOT_PASSWORD: root
+    networks:
+      - demo
+    depends_on:
+      - frontend
+
+  frontend:
+    build: ./frontend
+    ports:
+    - "80:80"
+    networks:
+      - demo
+
+networks:
+  demo:
+    driver: bridge

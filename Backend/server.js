@@ -9,8 +9,8 @@ app.use(express.json());
 ========================= */
 const dbConfig = {
   host: "mysql",      // Container name in the docker network
-  user: "root",
-  password: "root",
+  user: "sayaliparhar",
+  password: "sayali",
   database: "Voting",
   waitForConnections: true,
   connectionLimit: 10,

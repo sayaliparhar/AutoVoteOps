@@ -1,0 +1,20 @@
+# Local terraform directory (contains binaries)
+.terraform/
+
+# State files
+*.tfstate
+*.tfstate.backup
+
+# Variables
+*.tfvars
+*.tfvars.json
+
+# Sensitive files
+.terraform.lock.hcl
+
+#Key files
+*.pem
+*.key
+*.pub
+
+/Terraform/Ec2_Instances/Key/
