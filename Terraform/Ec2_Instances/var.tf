@@ -4,6 +4,10 @@ variable "pub_sub_1" {
   type = string
 }
 
+variable "pub_sub_2" {
+  type = string
+}
+
 variable "priv_sub_1" {
   type = string
 }
@@ -12,13 +16,14 @@ variable "priv_sub_2" {
   type = string
 }
 
-variable "priv_sub_3" {
-  type = string
-}
 
 # security-group-ids
 
 variable "jenkins_vm_sg" {
+  type = string
+}
+
+variable "docker_vm_sg" {
   type = string
 }
 

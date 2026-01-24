@@ -5,7 +5,7 @@ resource "aws_lb" "voting_app_alb" {
   ip_address_type = "ipv4"
   load_balancer_type = "application"
   security_groups = [var.alb_sg]
-  subnets = [var.pub_sub_1, var.priv_sub_3]
+  subnets = [var.pub_sub_1, var.pub_sub_2]
 }
 
 # The Listener

@@ -33,6 +33,32 @@ resource "aws_vpc_security_group_egress_rule" "egress-jenkins-all" {
   depends_on = [ aws_security_group.terra-jenkins ]
 }
 
+# Docker virtual-machine securiy-group-details
+
+resource "aws_security_group" "terra-docker" {
+  vpc_id = aws_vpc.terra-vpc.id
+  tags = {
+    Name = "Docker-sg"
+  }
+  depends_on = [ aws_vpc.terra-vpc ]
+}
+
+resource "aws_vpc_security_group_ingress_rule" "ingress-docker-ssh" {
+  security_group_id = aws_security_group.terra-docker.id
+  cidr_ipv4 = "0.0.0.0/0"
+  from_port = 22
+  to_port = 22
+  ip_protocol = "tcp"
+  depends_on = [ aws_security_group.terra-docker ]
+}
+
+resource "aws_vpc_security_group_egress_rule" "egress-docker-all" {
+  security_group_id = aws_security_group.terra-docker.id
+  cidr_ipv4 = "0.0.0.0/0"
+  ip_protocol = -1
+  depends_on = [ aws_security_group.terra-docker ]
+}
+
 # K8s master securiy-group-details
 
 resource "aws_security_group" "terra-k8s-master" {

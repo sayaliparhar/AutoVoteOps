@@ -11,12 +11,7 @@ sudo apt install jenkins -y
 sudo systemctl enable jenkins
 sudo systemctl start jenkins
 
-# 3. Install Docker (for building app images)
-sudo apt install docker.io -y
-sudo usermod -aG docker jenkins
-sudo systemctl restart jenkins
-
-# 4. Install Kubectl (to deploy to K8s)
+# 3. Install Kubectl (to deploy to K8s)
 # curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
 # sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl 
 

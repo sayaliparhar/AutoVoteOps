@@ -1,10 +1,10 @@
 # subnet-ids
 
-variable "private_sub_2" {
+variable "private_sub_1" {
   type = string
 }
 
-variable "private_sub_3" {
+variable "private_sub_2" {
   type = string
 }
 

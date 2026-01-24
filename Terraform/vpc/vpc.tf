@@ -15,9 +15,19 @@ resource "aws_subnet" "pub-sub-1" {
     depends_on = [ aws_vpc.terra-vpc ]
 }
 
+resource "aws_subnet" "pub-sub-2" {
+  vpc_id = aws_vpc.terra-vpc.id
+  cidr_block = "10.0.192.0/18"
+  availability_zone = "ap-south-1b"
+  tags = {
+    Name = "private-docker-subnet"
+  }
+  depends_on = [ aws_vpc.terra-vpc ]
+}
+
 resource "aws_subnet" "priv-sub-1" {
     vpc_id = aws_vpc.terra-vpc.id
-    cidr_block = "10.0.64.0/18"
+    cidr_block = "10.0.128.0/18"
     availability_zone = "ap-south-1b"
     tags = {
         Name = "private-K8s-subnet"
@@ -27,23 +37,14 @@ resource "aws_subnet" "priv-sub-1" {
 
 resource "aws_subnet" "priv-sub-2" {
   vpc_id = aws_vpc.terra-vpc.id
-  cidr_block = "10.0.128.0/18"
+  cidr_block = "10.0.64.0/18"
   availability_zone = "ap-south-1a"
   tags = {
-    Name = "private-rds-A"
+    Name = "private-k8s-subnet"
   }
   depends_on = [ aws_vpc.terra-vpc ]
 }
 
-resource "aws_subnet" "priv-sub-3" {
-  vpc_id = aws_vpc.terra-vpc.id
-  cidr_block = "10.0.192.0/18"
-  availability_zone = "ap-south-1b"
-  tags = {
-    Name = "private-rds-B"
-  }
-  depends_on = [ aws_vpc.terra-vpc ]
-}
 
 resource "aws_internet_gateway" "igw" {
     vpc_id = aws_vpc.terra-vpc.id
@@ -92,6 +93,12 @@ resource "aws_route_table_association" "public_route_association_1" {
     depends_on = [ aws_route_table.public-route-table, aws_subnet.pub-sub-1 ]
 }
 
+resource "aws_route_table_association" "public_route_association_2" {
+  route_table_id = aws_route_table.private_route_table.id
+  subnet_id = aws_subnet.pub-sub-2.id
+  depends_on = [ aws_route_table.public-route-table, aws_subnet.pub-sub-2]
+}
+
 resource "aws_route_table_association" "private_route_association_1" {
   route_table_id = aws_route_table.private_route_table.id
   subnet_id = aws_subnet.priv-sub-1.id
@@ -104,11 +111,6 @@ resource "aws_route_table_association" "private_route_association_2" {
   depends_on = [ aws_route_table.private_route_table ,aws_subnet.priv-sub-2 ]
 }
 
-resource "aws_route_table_association" "private_route_association_3" {
-  route_table_id = aws_route_table.private_route_table.id
-  subnet_id = aws_subnet.priv-sub-3.id
-  depends_on = [ aws_route_table.private_route_table, aws_subnet.priv-sub-3 ]
-}
 
 resource "aws_route" "public_routes" {
   route_table_id = aws_route_table.public-route-table.id

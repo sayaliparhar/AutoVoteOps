@@ -1,0 +1,58 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: frontend-deployment
+  namespace: autovote
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+      name: frontend-pod
+    spec:
+      imagePullSecrets:
+      - name: docker-secret
+      containers:
+      - name: frontend-container
+        image: ParharSayali/autovote-frontend:latest
+        imagePullPolicy: Always
+      ports:
+      - containerPort: 80
+      livenessProbe:
+        httpGet:
+          path: /
+          port: 80
+        initialDelaySeconds: 30
+        periodSeconds: 10
+        timeoutSeconds: 5
+        failureThreshold: 3
+      readinessProbe:
+        httpGet:
+          path: \
+          port: 80
+        initialDelaySeconds: 10
+        periodSeconds: 5
+        timeoutSeconds: 3
+        failureThreshold: 3
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: frontend-service
+  namespace: autovote
+spec:
+  type: ClusterIP
+  selector:
+    app: frontend
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+      
+

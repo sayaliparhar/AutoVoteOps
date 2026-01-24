@@ -17,6 +17,25 @@ resource "aws_instance" "jenkins-master" {
   }
 }
 
+# Docker vm
+
+resource "aws_instance" "Docker-vm" {
+  ami = "ami-02b8269d5e85954ef"
+  instance_type = "t2.medium"
+  key_name = aws_key_pair.terra-key.id
+  subnet_id = var.priv_sub_1 
+  vpc_security_group_ids = [ var.docker_vm_sg ]
+  associate_public_ip_address = false
+  user_data = file("${path.module}/Software-Installation-script/Docker-vm-script.sh")
+  root_block_device {
+    volume_size = 10
+    volume_type = "gp3"
+  }
+  tags = {
+    Name = "Docker-VM"
+  }
+}
+
 # k8s-master-vm
 resource "aws_instance" "k8s-master" {
   ami = "ami-031bf0e18d2893e79"

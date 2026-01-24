@@ -1,0 +1,24 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: nginx-config
+  namespace: autovote
+data:
+  default.conf: |
+    server {
+      listen 80;
+      location / {
+        root /usr/share/nginx/html;
+        index index.html;
+      }
+   
+    # This sends any call starting with /api to the backend container
+      location /api/ {
+        proxy_pass http://backend:3000/;
+      }
+
+      location /health {
+        proxy_pass http://backend:3000/health;
+        access_log_off;
+      }
+    }
