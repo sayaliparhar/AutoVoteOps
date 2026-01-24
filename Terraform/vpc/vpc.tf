@@ -10,7 +10,7 @@ resource "aws_subnet" "pub-sub-1" {
     cidr_block = "10.0.0.0/18"
     availability_zone = "ap-south-1a"
     tags = {
-        Name = "Jenkins_subnet"
+        Name = "public_subnet_1"
     }
     depends_on = [ aws_vpc.terra-vpc ]
 }
@@ -20,7 +20,7 @@ resource "aws_subnet" "pub-sub-2" {
   cidr_block = "10.0.192.0/18"
   availability_zone = "ap-south-1b"
   tags = {
-    Name = "private-docker-subnet"
+    Name = "public_subnet_2"
   }
   depends_on = [ aws_vpc.terra-vpc ]
 }
@@ -28,9 +28,9 @@ resource "aws_subnet" "pub-sub-2" {
 resource "aws_subnet" "priv-sub-1" {
     vpc_id = aws_vpc.terra-vpc.id
     cidr_block = "10.0.128.0/18"
-    availability_zone = "ap-south-1b"
+    availability_zone = "ap-south-1a"
     tags = {
-        Name = "private-K8s-subnet"
+        Name = "private_subnet_1"
     }
     depends_on = [ aws_vpc.terra-vpc ]
 }
@@ -38,9 +38,9 @@ resource "aws_subnet" "priv-sub-1" {
 resource "aws_subnet" "priv-sub-2" {
   vpc_id = aws_vpc.terra-vpc.id
   cidr_block = "10.0.64.0/18"
-  availability_zone = "ap-south-1a"
+  availability_zone = "ap-south-1b"
   tags = {
-    Name = "private-k8s-subnet"
+    Name = "private_subnet_2"
   }
   depends_on = [ aws_vpc.terra-vpc ]
 }
