@@ -4,7 +4,7 @@ pipeline {
     }
 
     environment {
-        DOCKER_REGISTRY = 'index.docker.io/v1/'
+        DOCKER_REGISTRY = 'https:/index.docker.io/v1/'
         DOCKER_CREDENTIALS_ID = 'dockerhub-credentials'
         DOCKER_IMAGE = "${DOCKER_USERNAME}/autovote-frontend"
         BUILD_NUMBER = "${env.BUILD_NUMBER}"
@@ -20,7 +20,7 @@ pipeline {
             steps {
                 echo "Checking Out Frontend Code"
                 git branch: "${params.GIT_BRANCH}",
-                  url: ''
+                  url: 'https://github.com/sayaliparhar/AutoVoteOps.git'
                 echo "Checkout Completed"   
             }
         }
