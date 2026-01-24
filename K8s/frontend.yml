@@ -18,7 +18,7 @@ spec:
       - name: docker-secret
       containers:
       - name: frontend-container
-        image: ParharSayali/autovote-frontend:latest
+        image: parharsayali/autovote-frontend:latest
         imagePullPolicy: Always
       ports:
       - containerPort: 80

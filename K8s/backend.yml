@@ -18,7 +18,7 @@ spec:
       - name: docker-secret
       containers:
       - name: backend-container
-        image: ParharSayali/autovote-backend:latest
+        image: parharsayali/autovote-backend:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 3000

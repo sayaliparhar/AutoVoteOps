@@ -11,7 +11,7 @@ pipeline {
     }
 
     parameters {
-        string(name: 'DOCKER_USERNAME', defaultValue: 'ParharSayali')
+        string(name: 'DOCKER_USERNAME', defaultValue: 'parharsayali')
         string(name: 'GIT_BRANCH', defaultValue: 'master')
     }
 

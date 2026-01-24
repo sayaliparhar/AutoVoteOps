@@ -5,7 +5,7 @@ pipeline {
 
     environment {
         NAMESPACE = 'autovote'
-        DOCKER_USERNAME = 'ParharSayali'
+        DOCKER_USERNAME = 'parharsayali'
     }
 
     parameters {
@@ -46,10 +46,10 @@ pipeline {
             steps {
                 echo "Updating Frontend Deployment"
                 sh """
-                  kubectl set image deployment frontend-deployment frontend=${DOCKER_USERNAME}/coding-cloud-frontend:${params.FRONTEND_IMAGE_TAG} \
+                  kubectl set image deployment frontend-deployment frontend=${DOCKER_USERNAME}/autovote-frontend:${params.FRONTEND_IMAGE_TAG} \
                   -n ${NAMESPACE}
                 """
-                echo "Frontend Image Updated to : ${DOCKER_USERNAME}/coding-cloud-frontend:${params.FRONTEND_IMAGE_TAG}"
+                echo "Frontend Image Updated to : ${DOCKER_USERNAME}/autovote-frontend:${params.FRONTEND_IMAGE_TAG}"
             }
         }
 
@@ -60,10 +60,10 @@ pipeline {
             steps {
                 echo "Updating Backend Deployment"
                 sh """
-                  kubectl set image deployment backend-deployment backend=${DOCKER_USERNAME}/coding-cloud-backend:${params.BACKEND_IMAGE_TAG} \
+                  kubectl set image deployment backend-deployment backend=${DOCKER_USERNAME}/autovote-backend:${params.BACKEND_IMAGE_TAG} \
                   -n ${NAMESPACE}
                 """
-                echo "Backend Image Update to : ${DOCKER_USERNAME}/coding-cloud-backend:${params.BACKEND_IMAGE_TAG}"
+                echo "Backend Image Update to : ${DOCKER_USERNAME}/autovote-backend:${params.BACKEND_IMAGE_TAG}"
             }
         }
 
@@ -111,8 +111,8 @@ pipeline {
                             Deployment Success             
               ==============================================
               Namespace : ${NAMESPACE}
-              Frontend Image : ${DOCKER_USERNAME}/coding-cloud-frontend:${params.FRONTEND_IMAGE_TAG}
-              Backend Image : ${DOCKER_USERNAME}/coding-cloud-backend:${params.BACKEND_IMAGE_TAG}
+              Frontend Image : ${DOCKER_USERNAME}/autovote-frontend:${params.FRONTEND_IMAGE_TAG}
+              Backend Image : ${DOCKER_USERNAME}/autovote-backend:${params.BACKEND_IMAGE_TAG}
               Triggered By : ${params.TRIGGERED_BY}
               ============================================= 
               """

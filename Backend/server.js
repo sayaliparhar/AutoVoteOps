@@ -8,7 +8,7 @@ app.use(express.json());
    1. DATABASE CONFIGURATION
 ========================= */
 const dbConfig = {
-  host: "mysql",
+  host: "terraform-2026012416564551480000000e.cx6y6kussqol.ap-south-1.rds.amazonaws.com",
   user: "sayaliparhar",
   password: "sayali",
   database: "Voting",
