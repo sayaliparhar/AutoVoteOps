@@ -94,7 +94,7 @@ resource "aws_route_table_association" "public_route_association_1" {
 }
 
 resource "aws_route_table_association" "public_route_association_2" {
-  route_table_id = aws_route_table.private_route_table.id
+  route_table_id = aws_route_table.public-route-table.id
   subnet_id = aws_subnet.pub-sub-2.id
   depends_on = [ aws_route_table.public-route-table, aws_subnet.pub-sub-2]
 }

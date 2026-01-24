@@ -1,19 +1,30 @@
 #!/bin/bash
-sudo apt update -y
-# 1. Install Java (Jenkins dependency)
-sudo apt install openjdk-17-jre -y
+set -e
 
-# 2. Install Jenkins
-curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | sudo tee /usr/share/keyrings/jenkins-keyring.asc > /dev/null
-echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/ | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
-sudo apt update -y
+echo "☕ Installing Java (Required for Jenkins)..."
+sudo apt update
+sudo apt install fontconfig openjdk-17-jre -y
+
+echo "🔑 Adding Jenkins Repository Key..."
+curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | sudo tee \
+  /usr/share/keyrings/jenkins-keyring.asc > /dev/null
+
+echo "📂 Adding Jenkins Debian Repository..."
+echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
+  https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
+  /etc/apt/sources.list.d/jenkins.list > /dev/null
+
+echo "📥 Installing Jenkins..."
+sudo apt update
 sudo apt install jenkins -y
+
+echo "🚀 Starting Jenkins Service..."
 sudo systemctl enable jenkins
 sudo systemctl start jenkins
 
-# 3. Install Kubectl (to deploy to K8s)
-# curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-# sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl 
+echo "✅ Jenkins installation complete!"
+echo "Your Initial Admin Password is:"
+sudo cat /var/lib/jenkins/secrets/initialAdminPassword
 
 # 4. Install Mysql
 sudo apt update -y
