@@ -4,7 +4,7 @@ pipeline {
     }
 
     environment {
-        DOCKER_REGISTRY = 'https:/index.docker.io/v1/'
+        DOCKER_REGISTRY = 'index.docker.io/v1/'
         DOCKER_CREDENTIALS = 'dockerhub-credentials'
         DOCKER_IMAGE = "${DOCKER_USERNAME}/autovote-backend"
         BUILD_NUMBER = "${env.BUILD_NUMBER}"
@@ -27,7 +27,7 @@ pipeline {
 
         stage('Building Backend Image') {
             steps {
-                dir('backend') {
+                dir('Backend') {
                     echo "Building Backend Images"
                     sh """
                       docker build -t ${DOCKER_IMAGE}:latest .

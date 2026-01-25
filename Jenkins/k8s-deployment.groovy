@@ -32,8 +32,8 @@ pipeline {
                 echo "Backing Up Current Deployment State"
                 sh """
                   mkdir -p backup
-                  kubectl get deployment frontend-deployment -n ${NAMESPACE} -o yaml > backup/frontend-deployment-backup.yml || true
-                  kubectl get deployment backend-deployment -n ${NAMESPACE} -o yaml > backup/backend-deployment-backup.yml || true
+                  kubectl get deployment frontend -n ${NAMESPACE} -o yaml > backup/frontend-backup.yml || true
+                  kubectl get deployment backend -n ${NAMESPACE} -o yaml > backup/backend-backup.yml || true
                 """
                 echo "Backup Create Successfully"
             }
@@ -46,7 +46,7 @@ pipeline {
             steps {
                 echo "Updating Frontend Deployment"
                 sh """
-                  kubectl set image deployment frontend-deployment frontend=${DOCKER_USERNAME}/autovote-frontend:${params.FRONTEND_IMAGE_TAG} \
+                  kubectl set image deployment frontend frontend=${DOCKER_USERNAME}/autovote-frontend:${params.FRONTEND_IMAGE_TAG} \
                   -n ${NAMESPACE}
                 """
                 echo "Frontend Image Updated to : ${DOCKER_USERNAME}/autovote-frontend:${params.FRONTEND_IMAGE_TAG}"
@@ -60,7 +60,7 @@ pipeline {
             steps {
                 echo "Updating Backend Deployment"
                 sh """
-                  kubectl set image deployment backend-deployment backend=${DOCKER_USERNAME}/autovote-backend:${params.BACKEND_IMAGE_TAG} \
+                  kubectl set image deployment backend backend=${DOCKER_USERNAME}/autovote-backend:${params.BACKEND_IMAGE_TAG} \
                   -n ${NAMESPACE}
                 """
                 echo "Backend Image Update to : ${DOCKER_USERNAME}/autovote-backend:${params.BACKEND_IMAGE_TAG}"
@@ -72,12 +72,12 @@ pipeline {
                 sh """
                   if [ "${params.FRONTEND_IMAGE_TAG}" != "latest" ]; then
                      echo "Waiting For Frontend Rollout ..."
-                     kubectl rollout status deployment frontend-deployment -n ${NAMESPACE} --timeout=5m
+                     kubectl rollout status deployment frontend -n ${NAMESPACE} --timeout=5m
                   fi
 
                   if [ "${params.BACKEND_IMAGE_TAG}" != "latest" ]; then
                      echo "Waiting For Backend Rollout ..."
-                     kubectl rollout status deployment backend-deployment -n ${NAMESPACE} --timeout=5m
+                     kubectl rollout status deployment backend -n ${NAMESPACE} --timeout=5m
                   fi
                 """
                 echo "All Rollouts Completed"
@@ -90,8 +90,8 @@ pipeline {
                 sh """
                   echo "Verfying Deployment Status"
                   kubectl get pods -n ${NAMESPACE} -o wide
-                  FRONTEND_READY=\$(kubectl get deployment frontend-deployment -n ${NAMESPACE} -o jsonpath='{.status.readyReplicas}')
-                  BACKEND_READY=\$(kubectl get deployment backend-deployment -n ${NAMESPACE} -o jsonpath='{.status.readyReplicas}')
+                  FRONTEND_READY=\$(kubectl get deployment frontend -n ${NAMESPACE} -o jsonpath='{.status.readyReplicas}')
+                  BACKEND_READY=\$(kubectl get deployment backend -n ${NAMESPACE} -o jsonpath='{.status.readyReplicas}')
                   NGINX_READY=\$(kubectl get deployment nginx-deployment -n ${NAMESPACE} -o jsonpath='{.status.readyReplicas}')
 
                   echo "Frontend Ready Pods = \$FRONTEND_READY"

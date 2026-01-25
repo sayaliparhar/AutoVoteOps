@@ -9,7 +9,7 @@ pipeline {
 
     parameters {
         choice(name: 'DEPLOYMENT_NAME',
-               choices: ['frontend-deployment', 'backend-deployment', 'all'],
+               choices: ['frontend', 'backend', 'all'],
                description: 'Which Deployment to RollBack')
         string(name: 'REVISION', defaultValue: '0', description: 'Revision Number to Rollback (0 = previous)')
     }
@@ -30,9 +30,9 @@ pipeline {
                     if (params.DEPLOYMENT_NAME == 'all') {
                         sh """
                           echo "Frontend Deployment History"
-                          kubectl rollout history deployment frontend-deployment -n ${NAMESPACE}
+                          kubectl rollout history deployment frontend -n ${NAMESPACE}
                           echo "Backend Deployment History"
-                          kubectl rollout history deployment backend-deployment -n ${NAMESPACE}
+                          kubectl rollout history deployment backend -n ${NAMESPACE}
                         """
                     } else {
                         sh "kubectl rollout history deployment ${params.DEPLOYMENT_NAME} -n ${NAMESPACE}"
@@ -48,9 +48,9 @@ pipeline {
                     if (params.DEPLOYMENT_NAME == 'all') {
                         sh """
                           echo "Rolling Back Frontend"
-                          kubectl rollout undo deployment frontend-deployment -n ${NAMESPACE} --to-revision=${params.REVISION}
+                          kubectl rollout undo deployment frontend -n ${NAMESPACE} --to-revision=${params.REVISION}
                           echo "Rolling Back Backend"
-                          kubectl rollout undo deployment backend-deployment -n ${NAMESPACE} --to-revision=${params.REVISION}
+                          kubectl rollout undo deployment backend -n ${NAMESPACE} --to-revision=${params.REVISION}
                         """
                     } else {
                         sh "kubectl rollout undo deployment ${params.DEPLOYMENT_NAME} -n ${NAMESPACE} --to-revision=${params.REVISION}"
@@ -65,8 +65,8 @@ pipeline {
                 script {
                     if (params.DEPLOYMENT_NAME == 'all') {
                         sh """
-                          kubectl rollout status deployment frontend-deployment -n ${NAMESPACE} --timeout=5m
-                          kubectl rollout status deployment backend-deployment -n ${NAMESPACE} --timeout=5m
+                          kubectl rollout status deployment frontend -n ${NAMESPACE} --timeout=5m
+                          kubectl rollout status deployment backend -n ${NAMESPACE} --timeout=5m
                         """
                     } else {
                         sh "kubectl rollout status deployment ${params.DEPLOYMENT_NAME} -n ${NAMESPACE} --timeout=5m"
