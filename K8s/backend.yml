@@ -1,7 +1,7 @@
 kind: Deployment
 apiVersion: apps/v1
 metadata:
-  name: backend-deployment
+  name: backend
   namespace: autovote
 spec:
   replicas: 2
@@ -12,14 +12,17 @@ spec:
     metadata:
       labels:
         app: backend
-      name: backend-pod
     spec:
       imagePullSecrets:
       - name: docker-secret
       containers:
-      - name: backend-container
+      - name: backend
         image: parharsayali/autovote-backend:latest
         imagePullPolicy: Always
+      ##  resources:
+      ##    requests:
+      ##      cpu: "256Mi"
+      ##      memory: "200m"
         ports:
         - containerPort: 3000
         livenessProbe:
@@ -32,16 +35,14 @@ spec:
           failureThreshold: 3
         readinessProbe:
           httpGet:
-            path: \health
+            path: /health
             port: 3000
           initialDelaySeconds: 10
           periodSeconds: 5
           timeoutSeconds: 3
           failureThreshold: 3
 
-
 ---
-
 kind: Service
 apiVersion: v1
 metadata:
@@ -55,4 +56,4 @@ spec:
   - protocol: TCP
     port: 3000
     targetPort: 3000
-      
+  sessionAffinity: None

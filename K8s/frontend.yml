@@ -12,35 +12,37 @@ spec:
     metadata:
       labels:
         app: frontend
-      name: frontend-pod
     spec:
       imagePullSecrets:
       - name: docker-secret
       containers:
-      - name: frontend-container
+      - name: frontend
         image: parharsayali/autovote-frontend:latest
         imagePullPolicy: Always
-      ports:
-      - containerPort: 80
-      livenessProbe:
-        httpGet:
-          path: /
-          port: 80
-        initialDelaySeconds: 30
-        periodSeconds: 10
-        timeoutSeconds: 5
-        failureThreshold: 3
-      readinessProbe:
-        httpGet:
-          path: \
-          port: 80
-        initialDelaySeconds: 10
-        periodSeconds: 5
-        timeoutSeconds: 3
-        failureThreshold: 3
+       ## resources:
+       ##   requests:
+       ##     cpu: "128Mi"
+       ##     memory: "100m"
+        ports:
+        - containerPort: 80
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
 
 ---
-
 kind: Service
 apiVersion: v1
 metadata:
@@ -54,5 +56,4 @@ spec:
   - protocol: TCP
     port: 80
     targetPort: 80
-      
-
+  sessionAffinity: None 
