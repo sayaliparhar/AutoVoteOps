@@ -1,20 +1,13 @@
-# Use a lightweight Node.js image
 FROM node:18-alpine
 
-# Create and change to the app directory
-WORKDIR /usr/src/app
+WORKDIR /Backend
 
-# Copy dependency files first for better caching
-COPY package*.json ./
+COPY package.json /Backend
 
-# Install only production dependencies
-RUN npm install --production
+RUN npm install
 
-# Copy the rest of the backend source code
-COPY . .
+COPY ..
 
-# The app runs on port 3000
 EXPOSE 3000
 
-# Command to run the app
-CMD ["node", "server.js"]
+CMD ["node" , "server.js"]
