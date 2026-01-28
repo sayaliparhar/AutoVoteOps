@@ -4,9 +4,6 @@ const mysql = require("mysql2");
 const app = express();
 app.use(express.json());
 
-/* =========================
-   1. DATABASE CONFIGURATION
-========================= */
 const dbConfig = {
   host: "terraform-2026012416564551480000000e.cx6y6kussqol.ap-south-1.rds.amazonaws.com",
   user: "root",
@@ -17,13 +14,13 @@ const dbConfig = {
   queueLimit: 0
 };
 
-// Create the connection pool
 const pool = mysql.createPool(dbConfig);
 
-/* =========================
-   2. DB INITIALIZATION LOGIC
-========================= */
-// This creates the table and the row with ID 1 if they don't exist
+// Health Check Endpoint for K8s and Docker
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "UP" });
+});
+
 const initDb = () => {
   const createTableQuery = `
     CREATE TABLE IF NOT EXISTS votes (
@@ -39,35 +36,28 @@ const initDb = () => {
 
   pool.query(createTableQuery, (err) => {
     if (err) return console.error("❌ Table creation failed:", err.message);
-    
     pool.query(insertInitialRowQuery, (err) => {
       if (err) return console.error("❌ Initial row insert failed:", err.message);
-      console.log("✅ Database initialized: Table and Initial Row are ready.");
+      console.log("✅ Database initialized.");
     });
   });
 };
 
-// Function to keep trying connection until MySQL is ready
 function connectAndInit() {
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("⏳ MySQL not ready yet. Retrying in 5 seconds...");
       setTimeout(connectAndInit, 5000);
     } else {
-      console.log("🚀 Connected to MySQL successfully!");
+      console.log("🚀 Connected to MySQL!");
       connection.release();
-      initDb(); // Setup table and rows
+      initDb();
     }
   });
 }
 
 connectAndInit();
 
-/* =========================
-   3. API ROUTES
-========================= */
-
-// GET: Current vote counts
 app.get("/votes", (req, res) => {
   pool.query("SELECT optionA, optionB FROM votes WHERE id = 1", (err, result) => {
     if (err) return res.status(500).json({ error: err.message });
@@ -75,38 +65,16 @@ app.get("/votes", (req, res) => {
   });
 });
 
-// POST: Cast a vote
 app.post("/vote", (req, res) => {
   const { option } = req.body;
-  if (option !== "optionA" && option !== "optionB") {
-    return res.status(400).json({ error: "Invalid option" });
-  }
-
   const query = `UPDATE votes SET ${option} = ${option} + 1 WHERE id = 1`;
   pool.query(query, (err) => {
     if (err) return res.status(500).json({ error: err.message });
-    res.json({ message: "Vote recorded successfully" });
+    res.json({ message: "Vote recorded" });
   });
 });
 
-// GET: Determine the winner
-app.get("/winner", (req, res) => {
-  pool.query("SELECT optionA, optionB FROM votes WHERE id = 1", (err, result) => {
-    if (err) return res.status(500).json({ error: err.message });
-    
-    const votes = result[0];
-    let winner = "Tie";
-    if (votes.optionA > votes.optionB) winner = "Option A";
-    if (votes.optionB > votes.optionA) winner = "Option B";
-
-    res.json({ winner });
-  });
-});
-
-/* =========================
-   4. START SERVER
-========================= */
 const PORT = 3000;
 app.listen(PORT, () => {
-  console.log(`Backend server is running on port ${PORT}`);
+  console.log(`Backend running on port ${PORT}`);
 });

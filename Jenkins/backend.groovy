@@ -42,8 +42,9 @@ pipeline {
             steps {
                 echo "Testing Backend Image"
                 sh """
-                  docker images | grep ${DOCKER_IMAGE}
+                  docker images | grep ${DOCKER_IMAGE}  
                 """
+                 // docker exec backend-test-${BUILD_NUMBER} wget --spider http://localhost:3000/health
                 echo "Backend Image Test Passed"
             }
         }
