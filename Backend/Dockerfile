@@ -7,7 +7,7 @@ WORKDIR /Backend
 
 # Only copy package files first for better layer caching
 COPY package.json ./
-RUN npm intall
+RUN npm install
 
 # Copy application source code
 COPY . .

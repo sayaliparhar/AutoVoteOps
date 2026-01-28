@@ -22,17 +22,13 @@ const pool = mysql.createPool(dbConfig);
 /* =========================
    2. HEALTH & READINESS PROBES
 ========================= */
-
-// Liveness: Is the process alive?
 app.get("/healthz", (req, res) => {
   res.status(200).send("OK");
 });
 
-// Readiness: Is the database connection active?
 app.get("/readyz", (req, res) => {
   pool.query("SELECT 1", (err) => {
     if (err) {
-      console.error("Readiness check failed:", err.message);
       return res.status(503).json({ status: "Database not ready" });
     }
     res.status(200).json({ status: "Ready" });
@@ -60,7 +56,7 @@ const initDb = () => {
     
     pool.query(insertInitialRowQuery, (err) => {
       if (err) return console.error("❌ Initial row insert failed:", err.message);
-      console.log("✅ Database initialized: Table and Initial Row are ready.");
+      console.log("✅ Database initialized.");
     });
   });
 };
@@ -71,7 +67,7 @@ function connectAndInit() {
       console.error("⏳ MySQL not ready yet. Retrying in 5 seconds...");
       setTimeout(connectAndInit, 5000);
     } else {
-      console.log("🚀 Connected to MySQL successfully!");
+      console.log("🚀 Connected to MySQL!");
       connection.release();
       initDb();
     }
@@ -86,4 +82,41 @@ connectAndInit();
 
 app.get("/votes", (req, res) => {
   pool.query("SELECT optionA, optionB FROM votes WHERE id = 1", (err, result) => {
-    if (err) return res.status(5
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(result[0] || { optionA: 0, optionB: 0 });
+  });
+});
+
+app.post("/vote", (req, res) => {
+  const { option } = req.body;
+  if (option !== "optionA" && option !== "optionB") {
+    return res.status(400).json({ error: "Invalid option" });
+  }
+
+  const query = `UPDATE votes SET ${option} = ${option} + 1 WHERE id = 1`;
+  pool.query(query, (err) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ message: "Vote recorded successfully" });
+  });
+});
+
+app.get("/winner", (req, res) => {
+  pool.query("SELECT optionA, optionB FROM votes WHERE id = 1", (err, result) => {
+    if (err) return res.status(500).json({ error: err.message });
+    
+    const votes = result[0];
+    let winner = "Tie";
+    if (votes && votes.optionA > votes.optionB) winner = "Option A";
+    else if (votes && votes.optionB > votes.optionA) winner = "Option B";
+
+    res.json({ winner });
+  });
+});
+
+/* =========================
+   5. START SERVER
+========================= */
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Backend server is running on port ${PORT}`);
+});
