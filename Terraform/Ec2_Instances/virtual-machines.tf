@@ -1,7 +1,7 @@
 # Jenkins vm
 
 resource "aws_instance" "jenkins-master" {
-  ami = "ami-02b8269d5e85954ef"
+  ami = "ami-0d15e4141eea055b0"
   instance_type = "t2.medium"
   key_name = aws_key_pair.terra-key.id
   subnet_id = var.pub_sub_1
@@ -20,7 +20,7 @@ resource "aws_instance" "jenkins-master" {
 # Docker vm
 
 resource "aws_instance" "Docker-vm" {
-  ami = "ami-02b8269d5e85954ef"
+  ami = "ami-00924eb41c5c78eb6"
   instance_type = "t2.medium"
   key_name = aws_key_pair.terra-key.id
   subnet_id = var.priv_sub_1 

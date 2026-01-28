@@ -1,43 +1,55 @@
 #!/bin/bash
 
-sudo apt update -y
-# 1. Install Java (Jenkins dependency)
-sudo apt install openjdk-17-jre -y
-
-
-# 2. Install Docker (for building app images)
+# 1. Start Error Handling & Logging immediately
 set -e
+set -o pipefail
 
-echo "🛠️ Preparing Ubuntu for Docker installation..."
+log() {
+    echo "[$(date +'%Y-%m-%d %H:%M:%S')] $1"
+}
 
-# 1. Update package index and install required system dependencies
-sudo apt-get update
+# 2. Wait for APT locks (Fixes the "Java not installing" issue)
+log "Checking for package manager locks..."
+while sudo fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1; do
+    log "Waiting for other software updates to finish..."
+    sleep 5
+done
+
+# 3. Install Java 17
+log "☕ Installing Java (Jenkins dependency)..."
+sudo apt update -y
+sudo apt install -y openjdk-17-jre
+# Verify Java immediately
+java -version || (log "❌ Java failed to install" && exit 1)
+
+# 4. Install Docker
+log "🛠️ Preparing for Docker installation..."
 sudo apt-get install -y \
     ca-certificates \
     curl \
     gnupg \
     lsb-release
 
-# 2. Download and run the official Docker convenience script
-echo "📦 Downloading and installing Docker..."
+log "📦 Running official Docker installation script..."
 curl -fsSL https://get.docker.com -o get-docker.sh
 sudo sh get-docker.sh
 
-# Setup permissions for the current Ubuntu user
-echo "👤 Configuring user permissions..."
+# 5. Permissions and Service Setup
+log "👤 Configuring Docker permissions..."
+# We add both the current user AND the jenkins user (if it exists)
 sudo usermod -aG docker $USER
+if id "jenkins" &>/dev/null; then
+    sudo usermod -aG docker jenkins
+    log "Added 'jenkins' user to docker group"
+fi
 
-# Enable Docker to start on boot
-echo "⚙️ Enabling Docker service..."
 sudo systemctl enable docker
 sudo systemctl start docker
 
-# 5. Cleanup
+# Cleanup
 rm get-docker.sh
 
-echo ""
-echo "✅ Installation Complete!"
+log "✅ All systems go! Java and Docker are installed."
 echo "-------------------------------------------------------"
-echo "🚀 To start using Docker without sudo, run this command:"
-echo "   newgrp docker"
+echo "🚀 IMPORTANT: Run 'newgrp docker' to use Docker now."
 echo "-------------------------------------------------------"
