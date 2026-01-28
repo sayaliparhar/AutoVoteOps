@@ -1,24 +1,31 @@
-kind: ConfigMap
 apiVersion: v1
+kind: ConfigMap
 metadata:
   name: nginx-config
-  namespace: autovote
 data:
   default.conf: |
     server {
-      listen 80;
-      location / {
-        root /usr/share/nginx/html;
-        index index.html;
-      }
-   
-    # This sends any call starting with /api to the backend container
-      location /api/ {
-        proxy_pass http://backend-service:3000/;
-      }
+        listen 80;
 
-      location /health {
-        proxy_pass http://backend-service:3000/health;
-        access_log off;
-      }
+        # Frontend Static Files
+        location / {
+            root /usr/share/nginx/html;
+            index index.html;
+            try_files $uri $uri/ /index.html;
+        }
+
+        # Health Check Route
+        location /health {
+            access_log off;
+            proxy_pass http://backend-service:3000/health;
+            proxy_set_header Host $host;
+        }
+
+        # API Proxy
+        location /api/ {
+            proxy_pass http://backend-service:3000/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        }
     }

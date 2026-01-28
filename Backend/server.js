@@ -9,7 +9,7 @@ app.use(express.json());
 ========================= */
 const dbConfig = {
   host: "terraform-2026012416564551480000000e.cx6y6kussqol.ap-south-1.rds.amazonaws.com",
-  user: "sayaliparhar",
+  user: "root",
   password: "sayaliparhar",
   database: "Voting",
   waitForConnections: true,

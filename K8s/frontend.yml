@@ -13,18 +13,19 @@ spec:
       labels:
         app: frontend
     spec:
-      imagePullSecrets:
-      - name: docker-secret
       containers:
-      - name: frontend
+      - name: frontend-container
         image: parharsayali/autovote-frontend:latest
-        imagePullPolicy: Always
-       ## resources:
-       ##   requests:
-       ##     cpu: "128Mi"
-       ##     memory: "100m"
         ports:
         - containerPort: 80
+        volumeMounts:
+        - name: nginx-pv-config
+          mountPath: /etc/nginx/conf.d/default.conf
+          subPath: default.conf
+      ##  resources:
+      ##    requests:
+      ##      cpu: "64Mi"
+      ##      memory: "100m"
         livenessProbe:
           httpGet:
             path: /
@@ -42,18 +43,23 @@ spec:
           timeoutSeconds: 3
           failureThreshold: 3
 
+      volumes:
+      - name: nginx-pv-config
+        configMap:
+          name: nginx-config
+
 ---
 kind: Service
 apiVersion: v1
 metadata:
-  name: frontend-service
+  name: nginx-service
   namespace: autovote
 spec:
-  type: ClusterIP
+  type: NodePort
   selector:
     app: frontend
   ports:
   - protocol: TCP
     port: 80
     targetPort: 80
-  sessionAffinity: None 
+    nodePort: 31000
