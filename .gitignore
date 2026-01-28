@@ -18,3 +18,4 @@
 *.pub
 
 /Terraform/Ec2_Instances/Key/
+.env

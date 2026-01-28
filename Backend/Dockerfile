@@ -1,16 +1,24 @@
 FROM node:18-alpine
 
-WORKDIR /backend
+# Install curl for the HEALTHCHECK instruction
+RUN apk add --no-cache curl
 
+WORKDIR /Backend
+
+# Only copy package files first for better layer caching
 COPY package.json ./
+RUN npm intall
 
-RUN npm install
-
+# Copy application source code
 COPY . .
 
-EXPOSE 3000
+# Native Docker Healthcheck using the /healthz endpoint
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:3000/healthz || exit 1
 
-HEALTHCHECK --interval=30s --timeout=3s --start-period=40s \
-  CMD curl -f http://localhost:5000/health || exit 1
+# Run as a non-root user
+# USER node
+
+EXPOSE 3000
 
 CMD ["node", "server.js"]

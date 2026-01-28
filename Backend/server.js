@@ -4,11 +4,14 @@ const mysql = require("mysql2");
 const app = express();
 app.use(express.json());
 
+/* =========================
+   1. DATABASE CONFIGURATION
+========================= */
 const dbConfig = {
-  host: "terraform-2026012416564551480000000e.cx6y6kussqol.ap-south-1.rds.amazonaws.com",
-  user: "root",
-  password: "sayaliparhar",
-  database: "Voting",
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0
@@ -16,11 +19,29 @@ const dbConfig = {
 
 const pool = mysql.createPool(dbConfig);
 
-// Health Check Endpoint for K8s and Docker
-app.get("/health", (req, res) => {
-  res.status(200).json({ status: "UP" });
+/* =========================
+   2. HEALTH & READINESS PROBES
+========================= */
+
+// Liveness: Is the process alive?
+app.get("/healthz", (req, res) => {
+  res.status(200).send("OK");
 });
 
+// Readiness: Is the database connection active?
+app.get("/readyz", (req, res) => {
+  pool.query("SELECT 1", (err) => {
+    if (err) {
+      console.error("Readiness check failed:", err.message);
+      return res.status(503).json({ status: "Database not ready" });
+    }
+    res.status(200).json({ status: "Ready" });
+  });
+});
+
+/* =========================
+   3. DB INITIALIZATION LOGIC
+========================= */
 const initDb = () => {
   const createTableQuery = `
     CREATE TABLE IF NOT EXISTS votes (
@@ -36,9 +57,10 @@ const initDb = () => {
 
   pool.query(createTableQuery, (err) => {
     if (err) return console.error("❌ Table creation failed:", err.message);
+    
     pool.query(insertInitialRowQuery, (err) => {
       if (err) return console.error("❌ Initial row insert failed:", err.message);
-      console.log("✅ Database initialized.");
+      console.log("✅ Database initialized: Table and Initial Row are ready.");
     });
   });
 };
@@ -49,7 +71,7 @@ function connectAndInit() {
       console.error("⏳ MySQL not ready yet. Retrying in 5 seconds...");
       setTimeout(connectAndInit, 5000);
     } else {
-      console.log("🚀 Connected to MySQL!");
+      console.log("🚀 Connected to MySQL successfully!");
       connection.release();
       initDb();
     }
@@ -58,23 +80,10 @@ function connectAndInit() {
 
 connectAndInit();
 
+/* =========================
+   4. API ROUTES
+========================= */
+
 app.get("/votes", (req, res) => {
   pool.query("SELECT optionA, optionB FROM votes WHERE id = 1", (err, result) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(result[0] || { optionA: 0, optionB: 0 });
-  });
-});
-
-app.post("/vote", (req, res) => {
-  const { option } = req.body;
-  const query = `UPDATE votes SET ${option} = ${option} + 1 WHERE id = 1`;
-  pool.query(query, (err) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json({ message: "Vote recorded" });
-  });
-});
-
-const PORT = 3000;
-app.listen(PORT, () => {
-  console.log(`Backend running on port ${PORT}`);
-});
+    if (err) return res.status(5

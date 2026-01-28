@@ -4,14 +4,10 @@
   "description": "Backend for voting app with auto-db-init",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "test": "echo \"No tests specified\" && exit 0"
+    "start": "node server.js"
   },
   "dependencies": {
     "express": "^4.18.2",
     "mysql2": "^3.6.0"
-  },
-  "engines": {
-    "node": ">=18.0.0"
   }
 }
