@@ -9,7 +9,7 @@ pipeline {
 
     parameters {
         choice(name: 'DEPLOYMENT_NAME',
-               choices: ['frontend', 'backend', 'all'],
+               choices: ['frontend', 'backend','all'],
                description: 'Which Deployment to RollBack')
         string(name: 'REVISION', defaultValue: '0', description: 'Revision Number to Rollback (0 = previous)')
     }

@@ -16,7 +16,7 @@ spec:
       imagePullSecrets:
       - name: docker-secret
       containers:
-      - name: backend
+      - name: backend-container
         image: parharsayali/autovote-backend:latest
         imagePullPolicy: Always
       ##  resources:

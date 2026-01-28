@@ -46,7 +46,7 @@ pipeline {
             steps {
                 echo "Updating Frontend Deployment"
                 sh """
-                  kubectl set image deployment frontend frontend=${DOCKER_USERNAME}/autovote-frontend:${params.FRONTEND_IMAGE_TAG} \
+                  kubectl set image deployment frontend frontend-container=${DOCKER_USERNAME}/autovote-frontend:${params.FRONTEND_IMAGE_TAG} \
                   -n ${NAMESPACE}
                 """
                 echo "Frontend Image Updated to : ${DOCKER_USERNAME}/autovote-frontend:${params.FRONTEND_IMAGE_TAG}"
@@ -60,7 +60,7 @@ pipeline {
             steps {
                 echo "Updating Backend Deployment"
                 sh """
-                  kubectl set image deployment backend backend=${DOCKER_USERNAME}/autovote-backend:${params.BACKEND_IMAGE_TAG} \
+                  kubectl set image deployment backend backend-container=${DOCKER_USERNAME}/autovote-backend:${params.BACKEND_IMAGE_TAG} \
                   -n ${NAMESPACE}
                 """
                 echo "Backend Image Update to : ${DOCKER_USERNAME}/autovote-backend:${params.BACKEND_IMAGE_TAG}"
@@ -92,11 +92,9 @@ pipeline {
                   kubectl get pods -n ${NAMESPACE} -o wide
                   FRONTEND_READY=\$(kubectl get deployment frontend -n ${NAMESPACE} -o jsonpath='{.status.readyReplicas}')
                   BACKEND_READY=\$(kubectl get deployment backend -n ${NAMESPACE} -o jsonpath='{.status.readyReplicas}')
-                  NGINX_READY=\$(kubectl get deployment nginx-deployment -n ${NAMESPACE} -o jsonpath='{.status.readyReplicas}')
 
                   echo "Frontend Ready Pods = \$FRONTEND_READY"
                   echo "Backend Ready Pods = \$BACKEND_READY"
-                  echo "Nginx Ready Pods = \$NGINX_READY"
                 """
                 echo "Deployment Verification Completed"
             }

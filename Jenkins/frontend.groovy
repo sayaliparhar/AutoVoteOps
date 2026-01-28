@@ -6,7 +6,7 @@ pipeline {
     environment {
         DOCKER_REGISTRY = 'index.docker.io/v1/'
         DOCKER_CREDENTIALS_ID = 'dockerhub-credentials'
-        DOCKER_IMAGE = "${DOCKER_USERNAME}/autovote-frontend"
+        DOCKER_IMAGE = "${params.DOCKER_USERNAME}/autovote-frontend"
         BUILD_NUMBER = "${env.BUILD_NUMBER}"
     }
 
@@ -98,7 +98,8 @@ pipeline {
 
         always {
             echo "Cleaning Up Images"
-            sh 'docker image prune -a -f'
+            // sh 'docker image prune -a -f'
+            sh "docker rmi ${DOCKER_IMAGE}:${BUILD_NUMBER} ${DOCKER_IMAGE}:latest"
             cleanWs()
             echo "Cleaning Up Completed"
         }

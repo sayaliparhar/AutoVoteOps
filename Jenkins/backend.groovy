@@ -5,8 +5,8 @@ pipeline {
 
     environment {
         DOCKER_REGISTRY = 'index.docker.io/v1/'
-        DOCKER_CREDENTIALS = 'dockerhub-credentials'
-        DOCKER_IMAGE = "${DOCKER_USERNAME}/autovote-backend"
+        DOCKER_CREDENTIALS_ID = 'dockerhub-credentials'
+        DOCKER_IMAGE = "${params.DOCKER_USERNAME}/autovote-backend"
         BUILD_NUMBER = "${env.BUILD_NUMBER}"
     }
 
@@ -52,7 +52,7 @@ pipeline {
             steps {
                 script {
                   echo "Pushing Backend Image to Dockerhub"
-                  docker.withRegistry("https://${DOCKER_REGISTRY}", "${DOCKER_CREDENTIALS}") {
+                  docker.withRegistry("https://${DOCKER_REGISTRY}", "${DOCKER_CREDENTIALS_ID}") {
                     sh """
                       docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}
                       docker push ${DOCKER_IMAGE}:latest 
@@ -93,7 +93,8 @@ pipeline {
         
         always {
             echo "Cleaning Up Images"
-            sh 'docker image prune -a -f'
+            // sh 'docker image prune -a -f'
+            sh "docker rmi ${DOCKER_IMAGE}:${BUILD_NUMBER} ${DOCKER_IMAGE}:latest"
             cleanWs()
             echo "Cleaning Up Completed"
         }
