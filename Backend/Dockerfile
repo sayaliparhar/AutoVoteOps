@@ -6,7 +6,7 @@ RUN apk add --no-cache curl
 WORKDIR /Backend
 
 # Only copy package files first for better layer caching
-COPY package.json ./
+COPY package*.json ./
 RUN npm install
 
 # Copy application source code
