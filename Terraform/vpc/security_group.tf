@@ -157,6 +157,15 @@ resource "aws_vpc_security_group_ingress_rule" "ingress-k8s-worker-31000" {
   depends_on = [ aws_security_group.terra-k8s-worker ]
 }
 
+resource "aws_vpc_security_group_ingress_rule" "ingress-mysql-allow" {
+  security_group_id = aws_security_group.terra-k8s-worker.id
+  ip_protocol = "tcp"
+  to_port = 3306
+  from_port = 3306
+  cidr_ipv4 = "0.0.0.0/0"
+  depends_on = [ aws_security_group.terra-k8s-worker ]
+}
+
 resource "aws_vpc_security_group_ingress_rule" "ingress-all-from-k8s-master" {
   security_group_id = aws_security_group.terra-k8s-worker.id
   referenced_security_group_id = aws_security_group.terra-k8s-master.id
