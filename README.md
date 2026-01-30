@@ -1,28 +1,9 @@
 # AutoVoteOps: Production-Grade CI/CD Pipeline
 
-![Architecture](https://img.shields.io/badge/Architecture-Microservices-blue)
-![Infrastructure](https://img.shields.io/badge/IaC-Terraform-purple)
-![Container](https://img.shields.io/badge/Container-Docker-blue)
-![Orchestration](https://img.shields.io/badge/Orchestration-Kubernetes-326CE5)
-![CI/CD](https://img.shields.io/badge/CI%2FCD-Jenkins-D24939)
-![Cloud](https://img.shields.io/badge/Cloud-AWS-FF9900)
-
-## 📋 Table of Contents
-
-- [Overview](#overview)
-- [Architecture](#architecture)
-- [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
-- [Features](#features)
-- [Prerequisites](#prerequisites)
-- [Quick Start](#quick-start)
-- [Future Roadmap](#future-roadmap)
-
 ## 🌟 Overview
+**AutoVoteOps** is a **production‑grade DevOps automation project** that demonstrates how to design, deploy, and operate a fully automated CI/CD pipeline on AWS using **Infrastructure as Code (IaC), Containerization, and Kubernetes Orchestration**.
 
-**AutoVoteOps** is a cloud-native voting application deployed using a robust CI/CD pipeline. This project demonstrates a "Gold Standard" DevOps workflow, integrating Infrastructure as Code (IaC), Containerization, and Kubernetes Orchestration.
-
-**AutoVoteOps** is a distributed microservices application designed to demonstrate a high-availability voting system, which is deployed using production-grade DevOps practices. This project showcases:
+The project provisions cloud infrastructure from scratch, builds and versions Docker images, deploys applications to Kubernetes, supports **automated rollouts**, and enables **one‑click rollback** to previous versions.
 
 - **Infrastructure as Code** using Terraform
 - **Container orchestration** with Kubernetes (kubeadm cluster)
@@ -40,36 +21,37 @@
 ✅ **Scalability** - Kubernetes deployments with replica management  
 ✅ **Real-World Patterns** - NAT Gateway, bastion host, RDS, container registry
 
-## 🏗️ Architecture
-### Application Architecture
+## 🧱 Architecture Diagram
 
-```
-User Request
-    ↓
-ALB (Security Group)
-    ↓
-Target Group
-    ↓
-K8s Worker Node (Private) :31000
-    ↓
-Nginx Service (NodePort Service)
-    ↓
-    ├──→ Frontend Pods
-    │    └── Nginx serving static files
-    │
-    └──→ Backend Pods (Node.js/Express)
-         └── API endpoints
-              ↓
-         RDS MySQL Database
-         └── Voting data storage
-```
+![AutoVoteOps Architecture](docs/AutoVoteOps_Architecture_dig.png)
+
+
+### 🔹 Architecture Flow
+
+1. Developer pushes code to GitHub
+
+2. GitHub Webhook triggers Jenkins jobs
+
+3. Jenkins builds Docker images on a dedicated Docker Builder EC2
+
+4. Images are pushed to Docker Hub with version tags
+
+5. Jenkins deploys updated images to Kubernetes (EC2‑based cluster)
+
+6. Application connects securely to RDS MySQL
+
+7. Traffic is routed via ALB DNS
+
+8. Rollback job allows reverting to previous stable versions
+
+---
 
 ## 🛠️ Tech Stack
 
 ### Infrastructure & Cloud
 - **Cloud Provider:** AWS (EC2, VPC, RDS, S3, NAT Gateway)
 - **IaC:** Terraform
-- **AMI Building:** Packer 
+- **AMI Building:** Packer (Jenkins.java,docker,kubeadm installation through AMI Packer)
 - **Container Orchestration:** Kubernetes (kubeadm)
 - **Networking:** VPC, Subnets, Security Groups, Route Tables
 - ALB: For traffic distribution
@@ -93,64 +75,7 @@ Nginx Service (NodePort Service)
 - **Workloads:** Deployments, Pods
 - **Config Management:** ConfigMaps, Secrets
 
-## 📁 Project Structure
-
-```
-AutoVoteOps/
-│
-├── Frontend/                      # web application
-│   ├── src/
-│   │   ├── index.html             # static files
-│   │   ├── style.css              # style files
-│   │    
-│   │  
-│   ├── Dockerfile              # Frontend container image
-│   ├── default.conf            # Nginx config for serving
-│  
-│
-├── Backend/                    # Express.js API
-│   ├── server.js               # Main server file
-│   ├── Dockerfile              # Backend container image
-│   ├── .env                    # Environment variables
-│   └── package.json
-│
-├── K8s/                        # Kubernetes manifests
-│   ├── namespace.yaml          # Namespace definition
-│   ├── config.yaml             # Nginx configuration
-│   ├── backend.yaml            # Backend workload
-│   ├── frontend.yaml           # Frontend workload
-│   
-│
-├── Terraform/                  # Infrastructure as Code
-│   ├── terraform.tf                 # Main configuration
-│   ├── variables.tf            # Variable definitions
-│   ├── outputs.tf              # Output value
-│   │
-│   ├── modules/
-│   │   ├── vpc/                # VPC module
-│   │   ├── ec2/                # EC2 instances
-│   │   ├── rds/                # RDS database
-│   │
-│   └── user-data/
-│       ├── master-init.sh      # K8s master installation
-│       ├── worker-join.sh      # K8s worker join script
-|       |__ Jenkins.sh          # Jenkins Installation
-|       |__ Docker.sh           # Docker Installation
-│
-├── Jenkins/                    # Jenkins job definitions
-│   ├── Frontend.Jenkinsfile    # Frontend build pipeline
-    ├── Backend.Jenkinsfile     # Backend build pipeline
-│   ├── Deploy.Jenkinsfile      # Deployment pipeline
-│   └── Rollback.Jenkinsfile    # Rollback pipeline
-│
-├── docs/                       # Documentation
-│   ├── Project-Documentation
-│   ├── Workflows.pdf
-|
-|__Testcases                    # Project Implementation
-├── .gitignore
-├── README.md
-```
+---
 
 ## 🚀 Features
 
@@ -175,25 +100,14 @@ AutoVoteOps/
 
 ## 📋 Prerequisites
 
-### Local Development
-- Git
-- Docker Desktop
-- Node.js 18+
-- kubectl
-- Terraform 1.0+
+### Local Setup
+- Terraform
 - AWS CLI configured
-
+- Git
 ### AWS Account
 - AWS account with appropriate permissions
-- IAM user with programmatic access
+- IAM user with appropriate access 
 - AWS CLI configured with credentials
-
-### Required AWS Resources
-- VPC with public and private subnets
-- NAT Gateway for private subnet internet access
-- EC2 instances (t2.medium or higher)
-- RDS MySQL instance (db.t3.micro or higher)
-- S3 bucket for state/token storage
 
 ### Tools & Services
 - GitHub account
@@ -202,15 +116,16 @@ AutoVoteOps/
 
 ---
 
-## ⚡ Quick Start
+## ⚡ Implementation Steps
 
-### 1. Clone Repository
+
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/sayaliparhar/AutoVoteOps.git
 cd AutoVoteOps
 ```
-
+---
 ### 2. Setup AWS Credentials
 
 ```bash
@@ -221,33 +136,69 @@ Setup AWS credentials using aws configure
 # Default region: ap-south-1
 # Default output format: json
 ```
+---
 
 ### 3. Deploy Infrastructure
 
 ```bash
 cd Terraform
-
-# Initialize Terraform
 terraform init
-
-# Review planned changes
 terraform plan
-
-# Apply infrastructure
 terraform apply -auto-approve
-
-# Save output values
-terraform output > ../outputs.txt
 ```
+**🏗️ This will create following resources**:
+- Networking: VPC with Public & Private Subnets.
 
-**This will create:**
-- VPC with public and private subnets
-- 4 EC2 instances (K8s master, worker, Jenkins, Docker)
-- RDS MySQL instance
-- Security groups and IAM roles
-- S3 bucket for token sharing
-- Kubernetes cluster (auto-configured)
+- Compute: 4 EC2 Instances (K8s Master, K8s Worker, Jenkins Server, Docker Builder).
 
+- Database: RDS MySQL instance.
+
+- Storage: S3 bucket for token sharing.
+
+- Security: IAM Roles and Security Groups.
+----
+### 4. Manual Bootstrapping (One-Time Setup)
+⚠️ Note: These steps are only required for the very first deployment to establish the baseline.
+
+🔹 Step 1: Push Docker Images
+- SSH into the Docker Builder instance via the Bastion Host.
+
+- Clone the git repo 
+    ```bash
+    git clone https://github.com/sayaliparhar/AutoVoteOps.git
+    cd AutoVoteOps
+    ```
+- Login to Docker Hub using a Personal Access Token (PAT).
+
+- Build and push the frontend and backend images.
+
+🔹 Step 2: Verify Kubernetes Cluster
+- SSH into the K8s Master and run:
+
+    ```bash
+    kubectl get nodes
+    kubectl get pods -n kube-system
+    ```
+- Ensure all nodes are Ready before proceeding.
+
+🔹 Step 3: Verify Kubernetes Worker
+- SSH into the K8s Worker and run:
+
+    ```bash
+    sudo crictl pods
+    ```
+- Ensure all pods are Ready before proceeding.
+
+🔹 Step 4: Initial K8s Deployment
+- On the K8s Master, prepare the environment for Jenkins agents:
+
+    ```bash
+    git clone https://github.com/sayaliparhar/AutoVoteOps.git
+    mv AutoVoteOps/k8s /home/ubuntu/
+    ```
+- Deploy the resources in order: **Namespace ➔ Secrets ➔ ConfigMaps ➔ Backend ➔ Frontend**.
+
+---
 ### 5. Setup Jenkins
 
 ```bash
@@ -259,15 +210,45 @@ echo "Jenkins URL: http://${JENKINS_IP}:8080"
 ssh -i your-key.pem ubuntu@${JENKINS_IP} \
   "sudo cat /var/lib/jenkins/secrets/initialAdminPassword"
 ```
+🔹 Step 1: Jenkins Setup
+- Install Suggested Plugins.
 
-### 6. Configure CI/CD Pipeline
+- Add Docker Hub Credentials in Manage Jenkins > Credentials.
 
-1. Open Jenkins at `http://<jenkins-ip>:8080`
-2. Install suggested plugins
-3. Setup the Global Credentials
-3. Create jobs from jenkins/ directory
-4. Configure GitHub webhook
-5. Trigger first build!
+- Configure Agents: Add nodes for docker-builder and k8s-master using their respective labels. (for correct labels you can check respective jenkins-file.)
+
+🔹 Step 2: Create Jobs
+
+| Job Name        | Trigger                  | Description                                      |
+|-----------------|--------------------------|--------------------------------------------------|
+| Frontend-Job    | GitHub Webhook           | Builds and pushes the frontend Docker image      |
+| Backend-Job     | GitHub Webhook           | Builds and pushes the backend Docker image       |
+| Deploy-to-K8s   | Post-build (chained)     | Deploys updated images to Kubernetes             |
+| Rollback-Job    | Manual (parameterized)   | Rolls back deployments to a selected version     |
+
+---
+
+### 6. GitHub Webhook Integration
+- To enable automated deployments:
+
+- Navigate to your GitHub Repo Settings > Webhooks.
+
+- Payload URL: http://<jenkins-ip>:8080/github-webhook/
+
+- Content type: application/json
+
+---
+
+### 7. Verification & Automation
+1. **Test Auto-Deploy**: Push a change to the code. Jenkins will trigger the build, push the image, and update the K8s pods automatically.
+
+2. **Verify Pods**:
+    ```bash
+    kubectl get pods -n <namespace>
+    kubectl rollout history deployment <deployment-name>
+    ```
+3. **Test Rollback**: Run the Rollback-Job in Jenkins, select the previous version, and verify the app reverts to its prior state.
+
 ---
 
 ## 📈 Future Roadmap
