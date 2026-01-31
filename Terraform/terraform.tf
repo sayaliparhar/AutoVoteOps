@@ -31,6 +31,9 @@ module "ec2" {
   # vpc-id
   vpc_id = module.vpc.vpc-id
 
+  # Iam-role-access
+  iam_instance_profile = module.iam.instance-profile-name
+
   depends_on = [ module.vpc ]
 }
 
@@ -42,4 +45,12 @@ module "RDS" {
   rds_sg = module.vpc.sg-rds
 
   depends_on = [ module.vpc ]
+}
+
+module "iam" {
+  source = "./IAM"
+}
+
+module "s3" {
+  source = "./S3"
 }

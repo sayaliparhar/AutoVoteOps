@@ -47,3 +47,8 @@ variable "alb_sg" {
 variable "vpc_id" {
   type = string
 }
+
+# Iam-role-name
+variable "iam_instance_profile" {
+  type = string
+}
