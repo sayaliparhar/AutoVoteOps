@@ -1,3 +1,5 @@
+# vpc creation
+
 resource "aws_vpc" "terra-vpc" {
   cidr_block = "10.0.0.0/16"
   tags = {
@@ -5,6 +7,7 @@ resource "aws_vpc" "terra-vpc" {
   }
 }
 
+# Subnet creation
 resource "aws_subnet" "pub-sub-1" {
     vpc_id = aws_vpc.terra-vpc.id
     cidr_block = "10.0.0.0/18"
@@ -45,7 +48,7 @@ resource "aws_subnet" "priv-sub-2" {
   depends_on = [ aws_vpc.terra-vpc ]
 }
 
-
+# Internet gateway creation
 resource "aws_internet_gateway" "igw" {
     vpc_id = aws_vpc.terra-vpc.id
     tags = {
@@ -54,6 +57,7 @@ resource "aws_internet_gateway" "igw" {
   
 }
 
+# Elastic-ip creation
 resource "aws_eip" "terra-eip" {
     region = "ap-south-1"
     tags = {
@@ -62,6 +66,7 @@ resource "aws_eip" "terra-eip" {
   
 }
 
+# Nat gateway association
 resource "aws_nat_gateway" "terra-nat" {
   allocation_id = aws_eip.terra-eip.id
   subnet_id = aws_subnet.pub-sub-1.id
@@ -71,6 +76,7 @@ resource "aws_nat_gateway" "terra-nat" {
   depends_on = [ aws_eip.terra-eip, aws_subnet.pub-sub-1 ]
 }
 
+# Public-route-table creation
 resource "aws_route_table" "public-route-table" {
     vpc_id = aws_vpc.terra-vpc.id
     tags = {
@@ -79,6 +85,7 @@ resource "aws_route_table" "public-route-table" {
   depends_on = [ aws_vpc.terra-vpc ]
 }
 
+# Private-route-table creation
 resource "aws_route_table" "private_route_table" {
   vpc_id = aws_vpc.terra-vpc.id
   tags = {
@@ -87,6 +94,7 @@ resource "aws_route_table" "private_route_table" {
   depends_on = [ aws_vpc.terra-vpc ]
 }
 
+# Public-route-table association
 resource "aws_route_table_association" "public_route_association_1" {
     route_table_id = aws_route_table.public-route-table.id
     subnet_id = aws_subnet.pub-sub-1.id
@@ -99,6 +107,7 @@ resource "aws_route_table_association" "public_route_association_2" {
   depends_on = [ aws_route_table.public-route-table, aws_subnet.pub-sub-2]
 }
 
+# Private-route-table association
 resource "aws_route_table_association" "private_route_association_1" {
   route_table_id = aws_route_table.private_route_table.id
   subnet_id = aws_subnet.priv-sub-1.id
@@ -111,7 +120,7 @@ resource "aws_route_table_association" "private_route_association_2" {
   depends_on = [ aws_route_table.private_route_table ,aws_subnet.priv-sub-2 ]
 }
 
-
+# public-routes association
 resource "aws_route" "public_routes" {
   route_table_id = aws_route_table.public-route-table.id
   destination_cidr_block = "0.0.0.0/0"
@@ -119,6 +128,7 @@ resource "aws_route" "public_routes" {
   depends_on = [ aws_route_table.public-route-table, aws_internet_gateway.igw ]
 }
 
+# Private-routes association
 resource "aws_route" "private_routes" {
   route_table_id = aws_route_table.private_route_table.id
   destination_cidr_block = "0.0.0.0/0"

@@ -44,7 +44,6 @@ pipeline {
                 sh """
                   docker images | grep ${DOCKER_IMAGE}  
                 """
-                 // docker exec backend-test-${BUILD_NUMBER} wget --spider http://localhost:3000/health
                 echo "Backend Image Test Passed"
             }
         }
@@ -95,7 +94,6 @@ pipeline {
         always {
             echo "Cleaning Up Images"
             sh 'docker image prune -a -f'
-            // sh "docker rmi ${DOCKER_IMAGE}:${BUILD_NUMBER} ${DOCKER_IMAGE}:latest"
             cleanWs()
             echo "Cleaning Up Completed"
         }

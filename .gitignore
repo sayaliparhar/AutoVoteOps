@@ -18,4 +18,4 @@
 *.pub
 
 /Terraform/Ec2_Instances/Key/
-Backend / .env
+/Backend /.env

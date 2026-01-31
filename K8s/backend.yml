@@ -19,10 +19,6 @@ spec:
       - name: backend-container
         image: parharsayali/autovote-backend:latest
         imagePullPolicy: Always
-      ##  resources:
-      ##    requests:
-      ##      cpu: "256Mi"
-      ##      memory: "200m"
         ports:
         - containerPort: 3000
         livenessProbe:

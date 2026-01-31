@@ -7,7 +7,6 @@ resource "aws_instance" "jenkins-master" {
   subnet_id = var.pub_sub_1
   vpc_security_group_ids = [ var.jenkins_vm_sg ]
   associate_public_ip_address = true
-  # user_data = file("${path.module}/Software-Installation-script/Jenkins-vm-script.sh")
   root_block_device {
     volume_size = 10
     volume_type = "gp3"
@@ -26,7 +25,6 @@ resource "aws_instance" "Docker-vm" {
   subnet_id = var.priv_sub_1 
   vpc_security_group_ids = [ var.docker_vm_sg ]
   associate_public_ip_address = false
-  # user_data = file("${path.module}/Software-Installation-script/Docker-vm-script.sh")
   root_block_device {
     volume_size = 10
     volume_type = "gp3"

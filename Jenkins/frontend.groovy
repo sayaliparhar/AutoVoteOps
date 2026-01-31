@@ -95,7 +95,6 @@ pipeline {
         always {
             echo "Cleaning Up Images"
             sh 'docker image prune -a -f'
-            // sh "docker rmi ${DOCKER_IMAGE}:${BUILD_NUMBER} ${DOCKER_IMAGE}:latest"
             cleanWs()
             echo "Cleaning Up Completed"
         }
