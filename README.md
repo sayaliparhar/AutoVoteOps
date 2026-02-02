@@ -23,7 +23,7 @@ The project provisions cloud infrastructure from scratch, builds and versions Do
 
 ## 🧱 Architecture Diagram
 
-![AutoVoteOps Architecture](docs/AutoVoteOps_Architecture_dig.png)
+![AutoVoteOps Architecture](docs/AutoVoteOps.png)
 
 
 ### 🔹 Architecture Flow
@@ -49,9 +49,9 @@ The project provisions cloud infrastructure from scratch, builds and versions Do
 ## 🛠️ Tech Stack
 
 ### Infrastructure & Cloud
-- **Cloud Provider:** AWS (EC2, VPC, RDS, S3, NAT Gateway)
+- **Cloud Provider:** AWS (EC2, VPC, RDS, S3, IAM, NAT Gateway)
 - **IaC:** Terraform
-- **AMI Building:** Packer (Jenkins.java,docker,kubeadm installation through AMI Packer)
+- **AMI Building:** Packer (Jenkins.java,docker,aws-cli,mysql-client,kubeadm installation through AMI Packer)
 - **Container Orchestration:** Kubernetes (kubeadm)
 - **Networking:** VPC, Subnets, Security Groups, Route Tables
 - ALB: For traffic distribution
@@ -78,13 +78,6 @@ The project provisions cloud infrastructure from scratch, builds and versions Do
 ---
 
 ## 🚀 Features
-
-### Application Features
-- **Dual-Option Interactive Voting**: Simple, intuitive "Team A" vs. "Team B" buttons for instant user engagement.
-- **Dynamic Progress Visuals**: Real-time progress bars that visually compare the vote distribution between the two teams.
-- **Live Leaderboard**: A stats section that displays the exact numerical vote count for each team.
-- **Winner Declaration**: A reactive header that automatically updates to announce which team is currently in the lead or if the results are tied.
-
 
 ### DevOps Features
 - 🏗️ **Infrastructure as Code** - Complete infrastructure defined in Terraform
@@ -259,9 +252,9 @@ ssh -i your-key.pem ubuntu@${JENKINS_IP} \
 
 ---
 
-## 👥 Authors
+## Author
 
-- **Sayali Parhar** - *Initial work* - [YourGitHub](https://github.com/sayaliparhar)
+- **Sayali Parhar**  - [YourGitHub](https://github.com/sayaliparhar)
 
 ---
 
