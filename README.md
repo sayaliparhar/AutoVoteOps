@@ -216,7 +216,7 @@ ssh -i your-key.pem ubuntu@${JENKINS_IP} \
 |-----------------|--------------------------|--------------------------------------------------|
 | Frontend-Job    | GitHub Webhook           | Builds and pushes the frontend Docker image      |
 | Backend-Job     | GitHub Webhook           | Builds and pushes the backend Docker image       |
-| Deploy-to-K8s   | Post-build (chained)     | Deploys updated images to Kubernetes             |
+| Deploy-to-K8s   | Post-build (Frontend-Job,Backend-Job)     | Deploys updated images to Kubernetes             |
 | Rollback-Job    | Manual (parameterized)   | Rolls back deployments to a selected version     |
 
 ---
@@ -232,7 +232,23 @@ ssh -i your-key.pem ubuntu@${JENKINS_IP} \
 
 ---
 
-### 7. Verification & Automation
+### 7. Deployment Verification
+- Trigger Pipelines: Run the Backend Job, then the Frontend Job. Both will automatically trigger the Deployment Job.
+
+- Monitor Update: Watch pods update in real-time:
+
+    ```bash
+    kubectl get pods -w -n <your-namespace>
+    ```
+
+- Access App: Open your ALB DNS endpoint in a browser.
+
+- Confirm: Verify the UI loads and connects to the database.
+
+- ✅ Result: AutoVoteOps is successfully deployed and fully automated!
+---
+
+### 8. Automation & Rollback
 1. **Test Auto-Deploy**: Push a change to the code. Jenkins will trigger the build, push the image, and update the K8s pods automatically.
 
 2. **Verify Pods**:
@@ -241,6 +257,49 @@ ssh -i your-key.pem ubuntu@${JENKINS_IP} \
     kubectl rollout history deployment <deployment-name>
     ```
 3. **Test Rollback**: Run the Rollback-Job in Jenkins, select the previous version, and verify the app reverts to its prior state.
+
+---
+
+## ⚠️ Challenges Faced
+
+- **Kubernetes Cluster Communication**
+  - Initial issues with master–worker node connectivity and security group rules.
+  - Resolved by properly configuring inbound/outbound ports and private subnet routing.
+
+- **Jenkins Agent Configuration**
+  - Difficulty connecting Docker Builder and K8s Master as Jenkins agents.
+  - Fixed by validating SSH keys, labels, and Java installation paths.
+
+- **Docker Image Versioning**
+  - Overwriting images caused rollback confusion.
+  - Implemented semantic version tagging (`v1`, `v2`, etc.) to maintain history.
+
+- **IAM Roles & Permissions**
+  - Access denied errors while interacting with S3, RDS, and EC2.
+  - Solved by attaching least-privilege IAM roles and validating policies.
+
+- **Kubernetes Rollback Testing**
+  - Rollbacks did not reflect immediately due to cached images.
+  - Addressed using `imagePullPolicy: Always` and proper rollout commands.
+
+---
+
+## 📚 Lessons Learned
+
+- **CI/CD Requires Clear Job Dependencies**
+  - Chaining Jenkins jobs correctly prevents deployment conflicts and race conditions.
+
+- **Networking & Security Matter**
+  - Understanding VPC, subnets, and security groups is as important as application logic.
+
+- **Automation Reduces Human Error**
+  - Once webhooks and pipelines were configured, deployments became faster and more reliable.
+
+- **Observability is Key**
+  - Using `kubectl logs`, `describe`, and rollout history commands greatly improved debugging speed.
+
+- **Rollback is Not Optional**
+  - Having a tested rollback strategy increases production confidence and system reliability.
 
 ---
 
